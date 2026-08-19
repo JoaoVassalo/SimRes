@@ -1,3 +1,4 @@
+#transient 1D linear solution with conditions pressure-pressure
 import numpy as np
 
 def linear_trans_1d(Pe,Pw,L,k,theta,ct,u,t_final,n_modos):
