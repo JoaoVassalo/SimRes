@@ -1,0 +1,30 @@
+name: simres
+
+channels:
+  - conda-forge
+
+platforms:
+  - win-64
+  - linux-64
+
+dependencies:
+  - python=3.12
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - ipykernel
+  - jupyter
+  - notebook
+  - pytest
+  - mypy
+  - ruff
+  - typing_extensions
+  - invoke
+  - jupytext
+  - pre-commit
+  - pytest-regressions
+
+environment:
+  PYTHONPATH:
+     - {{ root }}/src
