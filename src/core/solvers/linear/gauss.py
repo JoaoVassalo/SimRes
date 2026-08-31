@@ -2,11 +2,6 @@ import numpy as np
 
 
 def gauss_ingenuo(A, b):
-    """
-    Resolve o sistema linear Ax = b pelo método
-    de Eliminação de Gauss ingênua.
-    """
-
     A = np.array(A, dtype=float)
     b = np.array(b, dtype=float)
 
@@ -45,11 +40,7 @@ def gauss_ingenuo(A, b):
 
 
 def gauss_pivotamento(A, b):
-    """
-    Resolve o sistema linear Ax = b pelo método
-    de Eliminação de Gauss com pivotamento parcial.
-    """
-
+    
     A = np.array(A, dtype=float)
     b = np.array(b, dtype=float)
 
