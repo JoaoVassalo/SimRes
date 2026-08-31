@@ -1,7 +1,7 @@
 #transient 1D linear solution with conditions pressure-pressure
 import numpy as np
 
-def linear_trans_1d_PP(Pe, Pw, L, k, phi, ct, mu, t_final, n_modos):
+def linear_trans_1d_PP(p0, Pw, L, k, phi, ct, mu, t_final, n_modos):
 
     t=np.linspace(0,t_final,100)
     x=np.linspace(0,L,100)
@@ -15,6 +15,6 @@ def linear_trans_1d_PP(Pe, Pw, L, k, phi, ct, mu, t_final, n_modos):
 
         serie+=arg
 
-    P=(Pe-Pw)*((X/L)+(2/np.pi)*serie)+Pw
+    P=(p0-Pw)*((X/L)+(2/np.pi)*serie)+Pw
 
     return x,t,X,T,P

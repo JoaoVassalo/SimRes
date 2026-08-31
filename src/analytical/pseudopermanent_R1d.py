@@ -2,15 +2,15 @@
 
 import numpy as np
 
-def radial_pseudo_1d(p0, qw, h, k, re, rw, phi, ct, mu, B, t_final, C1, C2):
+def radial_pseudo_1d(p0, qw, h, k, re, rw, phi, ct, mu, t_final):
 
     t = np.linspace( 0, t_final, 100 )
     r = np.linspace( rw, re, 100 )
 
     R, T = np.meshgrid( r, t )
 
-    fator = ( C2 * qw * B * mu ) / ( k * h )
-    arg1 = ( 2 * C1 * k * T )/( phi * mu * ct * ( re**2 ) )
+    fator = ( qw  * mu ) / (2 * np.pi* k * h ) 
+    arg1 = ( 2 *  k * T )/( phi * mu * ct * ( re**2 ) )
     arg2 = np.log( R / rw )
     arg3 = ( 1 / 2 ) * ( ( R / re )**2 )
     arg4 = np.log( re / rw )
