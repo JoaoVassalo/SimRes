@@ -7,7 +7,7 @@ from scipy.special import erfc
 def linear_trans_1d_FP(p0, qw, L, k, A, mu, eta, t_final):
 
     t=np.linspace(0,t_final,100)
-    x=np.linspace(0,L,100)
+    x=np.linspace(0,L,101)
 
     X,T=np.meshgrid(x,t)
 

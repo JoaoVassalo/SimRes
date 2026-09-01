@@ -5,7 +5,7 @@ import numpy as np
 def radial_pseudo_1d(p0, qw, h, k, re, rw, phi, ct, mu, t_final):
 
     t = np.linspace( 0, t_final, 100 )
-    r = np.linspace( rw, re, 100 )
+    r = np.linspace( rw, re, 101 )
 
     R, T = np.meshgrid( r, t )
 
