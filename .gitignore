@@ -5,3 +5,6 @@ conda-lock.yml
 __pycache__/
 *.pyc
 *.pyo
+
+.ipynb_checkpoints/
+.vscode/
