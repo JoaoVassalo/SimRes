@@ -20,4 +20,7 @@ def linear_trans_1d_FP(p0, qw, L, k, A, mu, eta, t_final):
 
     P[1:, :] = p0 - (qw * mu * L)/(k * A) * (np.sqrt((4 * eta * T_pos)/(np.pi * L**2)) * np.exp((-X_pos**2)/(4 * eta * T_pos)) - (X_pos / L) * erfc(X_pos / np.sqrt(4 * eta * T_pos)))
 
+    print(P[1, 0] / 1e6)    # x = 0, primeiro instante > 0
+    print(P[1, -1] / 1e6)   # x = L, primeiro instante > 0
+
     return x,t,X,T,P

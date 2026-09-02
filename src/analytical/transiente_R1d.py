@@ -9,7 +9,13 @@ def radial_trans_1d_FP(p0, qw,h, k, phi, ct, mu, t_final, rw, re):
 
     R, T = np.meshgrid(r,t)
 
+    P=[]
 
-    P = p0 - (qw * mu)/(4 * np.pi * k * h) * exp1((phi * mu * ct * R**2)/(4 * k * T))
+    P[0, :] = p0
+    
+    T_pos = T[1:, :]
+    R_pos = R[1:, :]
+    
+    P[1:, :] = p0 - (qw * mu)/(4 * np.pi * k * h) * exp1((phi * mu * ct * R_pos**2)/(4 * k * T_pos))
 
     return r, t, R, T, P
