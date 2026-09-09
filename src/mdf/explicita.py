@@ -1,9 +1,9 @@
 import numpy as np
 
 
-def explicita_1d_PF(
+def explicita_1d_FP(
     Pi,
-    Pw,
+    Pe,
     qw,
     h,
     L,
@@ -51,11 +51,11 @@ def explicita_1d_PF(
 
         P_new = np.zeros(nx)
 
-        # fronteira esquerda - pressão prescrita
+        # fronteira esquerda - fluxo prescrito
         P_new[0] = (
-            (1 - 4 * lambd) * P_old[0]
-            + (4 / 3) * lambd * P_old[1]
-            + (8 / 3) * lambd * Pw
+            (1 - lambd) * P_old[0]
+            + lambd * P_old[1]
+            + lambd *(qw*mu*dx)/(k*A)
         )
 
         # nós internos - diferença centrada
@@ -67,12 +67,11 @@ def explicita_1d_PF(
                 + lambd * P_old[i + 1]
             )
 
-        # fronteira direita - fluxo prescrito
+        # fronteira direita - pressão prescrita
         P_new[-1] = (
-            (1 - lambd) * P_old[-1]
-            + lambd * P_old[-2]
-            + lambd * (qw * mu * dx) / (k * A)
-        )
+            (1 - 4*lambd) * P_old[-1]
+            + (4/3)*lambd * P_old[-2]
+            +(8/3)*lambd *Pe)
 
         P[n + 1, :] = P_new
 
