@@ -1,6 +1,6 @@
 import numpy as np
 
-
+#codigo desenvolvido em metodos numericos 2
 def gauss_ingenuo(A, b):
     A = np.array(A, dtype=float)
     b = np.array(b, dtype=float)

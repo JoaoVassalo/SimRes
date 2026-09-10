@@ -1,7 +1,7 @@
 import numpy as np
 
-
-def jacobi(A, b, x0, Eppara, max_iter=1000):
+#codigo desenvolvido em metodos numericos 2
+def jacobi(A, b, x0, Eppara, max_iter=10000):
 
     A = np.array(A, dtype=float)
     b = np.array(b, dtype=float)
@@ -28,8 +28,9 @@ def jacobi(A, b, x0, Eppara, max_iter=1000):
         )
 
         if erro <= Eppara:
-            return x_new
+            return x_new, k+1
 
         x_old = np.copy(x_new)
+    print("Jacobi atingiu o número máximo de iterações.")
 
-    return x_new
+    return x_new, max_iter
