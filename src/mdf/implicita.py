@@ -9,24 +9,9 @@ from core.solvers.linear.jacobi import jacobi
 
 
 # implícita 1d - fluxo-pressão
-def implicita_1d_FP(
-    p0,
-    Pe,
-    qw,
-    h,
-    L,
-    largura,
-    k,
-    phi,
-    ct,
-    mu,
-    t_final,
-    nx,
-    nt,
-    metodo="TDMA",
-):
+def implicita_1d_FP(p0, Pe, qw, h, L, k, phi, ct, mu, t_final, nx, nt, metodo="TDMA"):
 
-    A = h * largura
+    A = h * L
 
     # malha espacial
     dx = L / nx
@@ -129,21 +114,7 @@ def implicita_1d_FP(
 
 
 # implícita 1d - pressão-pressão
-def implicita_1d_PP(
-    p0,
-    Pw,
-    h,
-    L,
-    largura,
-    k,
-    phi,
-    ct,
-    mu,
-    t_final,
-    nx,
-    nt,
-    metodo="TDMA",
-):
+def implicita_1d_PP(p0, Pw, h, L, k, phi, ct, mu, t_final, nx, nt, metodo="TDMA"):
 
     Pe = p0
 
