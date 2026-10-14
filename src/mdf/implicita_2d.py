@@ -9,7 +9,7 @@ from mdf.peaceman import (
 )
 
 
-def implicita_2d(p0, pwf, rw, h,Lx, Ly, k, phi, ct, mu,t_final, nx, ny, nt):
+def implicita_2d(p0, pwf, rw, h,Lx, Ly, k, phi, ct, mu,t_final, nx, ny, nt, iw=None, jw=None):
     # malha espacial
     dx = Lx / nx
     dy = Ly / ny
@@ -27,11 +27,17 @@ def implicita_2d(p0, pwf, rw, h,Lx, Ly, k, phi, ct, mu,t_final, nx, ny, nt):
     rx = dt / dx**2
     ry = dt / dy**2
 
-    # poço no centro
-    iw = nx // 2
-    jw = ny // 2
+    # poço do poço
+    if iw is None:
+        iw = nx // 2
+
+    if jw is None:
+        jw = ny // 2
+
     pw = iw + nx * jw
 
+    #Peaceman
+    
     req = raio_equivalente(dx)
     WI = well_index(req, rw, h)
 
@@ -100,7 +106,7 @@ def implicita_2d(p0, pwf, rw, h,Lx, Ly, k, phi, ct, mu,t_final, nx, ny, nt):
 
         # vazão do poço
         q_poco[n + 1] = vazao_pressao_prescrita(pwf,P_new[pw],k[jw, iw],mu,WI)
-        
+
         P[n + 1, :] = P_new
         P_old = P_new.copy()
 
