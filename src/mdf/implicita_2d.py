@@ -7,9 +7,18 @@ from mdf.peaceman import (
     raio_equivalente,
     termos_pressao_prescrita
 )
+from mdf.boundary_conditions import boundary_condition, create_boundary_mask
 
 
-def implicita_2d(p0, pwf, rw, h,Lx, Ly, k, phi, ct, mu,t_final, nx, ny, nt, iw=None, jw=None):
+def implicita_2d(p0, pwf, rw, h, Lx, Ly, k, phi, ct, mu, t_final, nx, ny, nt,
+    iw=None, jw=None, boundary_conditions=None, boundary_values=None, internal_no_flow_faces=None,
+    injection_wells=None,):
+    """Resolve a pressão 2D totalmente implícita.
+
+    ``boundary_values`` recebe pressão em faces ``pressure`` e vazão por face
+    em ``flow``; vazão positiva entra no domínio e ``q=0`` representa fluxo nulo.
+    """
+
     # malha espacial
     dx = Lx / nx
     dy = Ly / ny
@@ -18,6 +27,12 @@ def implicita_2d(p0, pwf, rw, h,Lx, Ly, k, phi, ct, mu,t_final, nx, ny, nt, iw=N
 
     n_blocos = nx * ny
     volume = dx * dy * h
+    if boundary_conditions is None:
+        boundary_conditions = {}
+    if boundary_values is None:
+        boundary_values = {}
+    if injection_wells is None:
+        injection_wells = []
 
     # parâmetros
     beta = 1 / (phi * ct * mu)
@@ -26,8 +41,11 @@ def implicita_2d(p0, pwf, rw, h,Lx, Ly, k, phi, ct, mu,t_final, nx, ny, nt, iw=N
     t = np.linspace(0, t_final, nt + 1)
     rx = dt / dx**2
     ry = dt / dy**2
+    flow_coefficient = dt / (phi * ct * volume)
+    boundary_mask, boundary_value_mask = create_boundary_mask(nx, ny, boundary_conditions, boundary_values, internal_no_flow_faces)
+    faces = (("left", 0, -1, 0, rx), ("right", 1, 1, 0, rx), ("bottom", 2, 0, -1, ry), ("top", 3, 0, 1, ry))
 
-    # poço do poço
+    # posição do poço
     if iw is None:
         iw = nx // 2
 
@@ -37,7 +55,7 @@ def implicita_2d(p0, pwf, rw, h,Lx, Ly, k, phi, ct, mu,t_final, nx, ny, nt, iw=N
     pw = iw + nx * jw
 
     #Peaceman
-    
+
     req = raio_equivalente(dx)
     WI = well_index(req, rw, h)
 
@@ -65,33 +83,18 @@ def implicita_2d(p0, pwf, rw, h,Lx, Ly, k, phi, ct, mu,t_final, nx, ny, nt, iw=N
                 matriz[p, p] = 1.0
                 D[p] = P_old[p]
 
-                # oeste
-                if i > 0:
-                    W = p - 1
-                    kW = 2 / (1 / k[j, i] + 1 / k[j, i - 1])
-                    matriz[p, p] += beta * rx * kW
-                    matriz[p, W] = -beta * rx * kW
-
-                # leste
-                if i < nx - 1:
-                    E = p + 1
-                    kE = 2 / ( 1 / k[j, i] + 1 / k[j, i + 1])
-                    matriz[p, p] += beta * rx * kE
-                    matriz[p, E] = -beta * rx * kE
-
-                # inferior
-                if j > 0:
-                    S = p - nx
-                    kS = 2 / (1 / k[j, i] + 1 / k[j - 1, i])
-                    matriz[p, p] += beta * ry * kS
-                    matriz[p, S] = -beta * ry * kS
-
-                # superior
-                if j < ny - 1:
-                    N = p + nx
-                    kN = 2 / (1 / k[j, i] + 1 / k[j + 1, i])
-                    matriz[p, p] += beta * ry * kN
-                    matriz[p, N] = -beta * ry * kN
+                for side, face, di, dj, r in faces:
+                    condition = boundary_mask[j, i, face]
+                    if condition == "internal":
+                        neighbor = p + di + nx * dj
+                        face_k = 2 / (1 / k[j, i] + 1 / k[j + dj, i + di])
+                        transmissibility = beta * r * face_k
+                        matriz[p, p] += transmissibility
+                        matriz[p, neighbor] = -transmissibility
+                    else:
+                        inward_neighbor = p - di - nx * dj
+                        coefficient = beta * r * k[j, i] if condition == "pressure" else flow_coefficient
+                        boundary_condition(matriz, D, (p, inward_neighbor), condition, coefficient, boundary_value_mask[j, i, face])
 
                 # poço produtor
                 if i == iw and j == jw:
@@ -100,6 +103,10 @@ def implicita_2d(p0, pwf, rw, h,Lx, Ly, k, phi, ct, mu,t_final, nx, ny, nt, iw=N
                         WI,dt,phi,ct,volume)
                     matriz[p, p] += termo_diag
                     D[p] += termo_fonte
+
+                for injection_well in injection_wells:
+                    if i == injection_well["i"] and j == injection_well["j"]:
+                        D[p] += injection_well["rate"] * flow_coefficient
 
         # solução do sistema
         P_new = solve(matriz, D)

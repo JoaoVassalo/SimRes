@@ -25,3 +25,7 @@ def termos_pressao_prescrita(pwf,k,mu,WI,dt,phi,ct,volume):
     termo_fonte = alpha * pwf
 
     return termo_diagonal, termo_fonte
+
+
+def pressao_vazao_prescrita(q, p_bloco, k, mu, WI):
+    return p_bloco + q * mu / (k * WI)
