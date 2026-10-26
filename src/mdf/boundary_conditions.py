@@ -13,11 +13,14 @@ def create_boundary_mask(nx, ny, boundary_conditions=None, boundary_values=None,
 
     for side, condition in boundary_conditions.items():
         if side not in sides:
-            raise ValueError(f"Borda desconhecida: {side}")
+            print(f"Borda desconhecida: {side}")
+            return
         if condition != "pressure" and condition != "flow":
-            raise ValueError("condition deve ser 'pressure' ou 'flow'")
+            print("condition deve ser 'pressure' ou 'flow'")
+            return
         if condition == "pressure" and side not in boundary_values:
-            raise ValueError(f"Informe a pressão prescrita para a borda {side}")
+            print(f"Informe a pressão prescrita para a borda {side}")
+            return
 
     mask[:, 0, sides["left"]] = boundary_conditions.get("left", "flow")
     mask[:, -1, sides["right"]] = boundary_conditions.get("right", "flow")
@@ -33,7 +36,8 @@ def create_boundary_mask(nx, ny, boundary_conditions=None, boundary_values=None,
             j1, i1 = divmod(first, nx)
             j2, i2 = divmod(second, nx)
             if not (0 <= i1 < nx and 0 <= i2 < nx and 0 <= j1 < ny and 0 <= j2 < ny):
-                raise ValueError("Índice de face interna fora da malha")
+                print("Índice de face interna fora da malha")
+                return
             if j1 == j2 and abs(i1 - i2) == 1:
                 mask[j1, min(i1, i2), sides["right"]] = "flow"
                 mask[j1, max(i1, i2), sides["left"]] = "flow"
@@ -45,7 +49,8 @@ def create_boundary_mask(nx, ny, boundary_conditions=None, boundary_values=None,
                 values[min(j1, j2), i1, sides["top"]] = 0.0
                 values[max(j1, j2), i1, sides["bottom"]] = 0.0
             else:
-                raise ValueError("As faces internas devem ligar células vizinhas")
+                print("As faces internas devem ligar células vizinhas")
+                return
 
     return mask, values
 
@@ -64,4 +69,4 @@ def boundary_condition(matrix, rhs, index, condition, coefficient, value=0.0):
     elif condition == "flow":
         rhs[cell] += coefficient * value
     else:
-        raise ValueError("condition deve ser 'pressure' ou 'flow'")
+        print("condition deve ser 'pressure' ou 'flow'")

@@ -1,12 +1,7 @@
 import numpy as np
-from scipy.linalg import solve
+from core.solvers.linear.gauss import fatorar_gauss, resolver_gauss
 
-from mdf.peaceman import (
-    well_index,
-    vazao_pressao_prescrita,
-    raio_equivalente,
-    termos_pressao_prescrita
-)
+from core.peaceman import well_index, vazao_pressao_prescrita, raio_equivalente, termos_pressao_prescrita
 from mdf.boundary_conditions import boundary_condition, create_boundary_mask
 
 
@@ -42,7 +37,10 @@ def implicita_2d(p0, pwf, rw, h, Lx, Ly, k, phi, ct, mu, t_final, nx, ny, nt,
     rx = dt / dx**2
     ry = dt / dy**2
     flow_coefficient = dt / (phi * ct * volume)
-    boundary_mask, boundary_value_mask = create_boundary_mask(nx, ny, boundary_conditions, boundary_values, internal_no_flow_faces)
+    boundary_data = create_boundary_mask(nx, ny, boundary_conditions, boundary_values, internal_no_flow_faces)
+    if boundary_data is None:
+        return
+    boundary_mask, boundary_value_mask = boundary_data
     faces = (("left", 0, -1, 0, rx), ("right", 1, 1, 0, rx), ("bottom", 2, 0, -1, ry), ("top", 3, 0, 1, ry))
 
     # posição do poço
@@ -67,6 +65,7 @@ def implicita_2d(p0, pwf, rw, h, Lx, Ly, k, phi, ct, mu, t_final, nx, ny, nt,
     P[0, :] = P_old
 
     q_poco = np.zeros(nt + 1)
+    fatoracao = None
 
     # loop temporal
     for n in range(nt):
@@ -109,7 +108,13 @@ def implicita_2d(p0, pwf, rw, h, Lx, Ly, k, phi, ct, mu, t_final, nx, ny, nt,
                         D[p] += injection_well["rate"] * flow_coefficient
 
         # solução do sistema
-        P_new = solve(matriz, D)
+        if fatoracao is None:
+            fatoracao = fatorar_gauss(matriz)
+            if fatoracao is None:
+                return
+        P_new = resolver_gauss(fatoracao, D)
+        if P_new is None:
+            return
 
         # vazão do poço
         q_poco[n + 1] = vazao_pressao_prescrita(pwf,P_new[pw],k[jw, iw],mu,WI)

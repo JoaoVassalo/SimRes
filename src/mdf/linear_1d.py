@@ -196,11 +196,11 @@ def implicita_1d_FP(p0, Pe, qw, h, L, k, phi, ct, mu, t_final, nx, nt, metodo="T
             P_new = solve(matriz, D)
 
         else:
+            print("Método deve ser TDMA, Gauss, Jacobi ou Scipy.")
+            return
 
-            raise ValueError(
-                "Método deve ser TDMA, Gauss, Jacobi ou Scipy."
-            )
-
+        if P_new is None:
+            return
         P[n + 1, :] = P_new
         P_old = P_new.copy()
 
@@ -301,11 +301,11 @@ def implicita_1d_PP(p0, Pw, h, L, k, phi, ct, mu, t_final, nx, nt, metodo="TDMA"
             P_new = solve(matriz, D)
 
         else:
+            print("Método deve ser TDMA, Gauss, Jacobi ou Scipy.")
+            return
 
-            raise ValueError(
-                "Método deve ser TDMA, Gauss, Jacobi ou Scipy."
-            )
-
+        if P_new is None:
+            return
         P[n + 1, :] = P_new
         P_old = P_new.copy()
 

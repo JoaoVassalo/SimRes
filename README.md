@@ -5,10 +5,13 @@ Repositório de simulações de escoamento em reservatórios, com soluções ana
 ## Estrutura
 
 - `src/analytical/`: soluções analíticas lineares e radiais.
-- `src/mdf/`: métodos de diferenças finitas, modelos de poço, permeabilidade, falhas e velocidades.
-- `src/core/`: métricas de erro e solvers lineares auxiliares.
+- `src/mdf/`: métodos de diferenças finitas.
+- `src/mvf/`: métodos de volumes finitos.
+- `src/core/`: cálculo de velocidades, modelos compartilhados de poço, permeabilidade e falha, métricas de erro e solvers lineares auxiliares.
 - `notebooks/analytical/`: visualizações das soluções analíticas.
-- `notebooks/numerical/`: simulações numéricas por geometria.
+- `notebooks/numerical/reservoir_2d/mdf/`: simulações 2D por diferenças finitas.
+- `notebooks/numerical/reservoir_2d/mvf/`: simulações 2D por volumes finitos.
+- `notebooks/numerical/`: demais simulações numéricas.
 - `notebooks/validation/`: estudos de convergência e comparação de solvers.
 - `data/`: dados de entrada, incluindo a matriz de permeabilidade.
 
